@@ -32,12 +32,16 @@
     .face.bottom { transform:rotateX(-90deg) translateZ(120px); }
 
     /* OUTLINES */
-    .outline { position:absolute; border:3px dashed #00f; pointer-events:none; }
+    .outline { position:absolute; border:4px dashed #00f; pointer-events:none; }
     .front .outline  { width:160px; height:140px; top:50px; left:40px; clip-path:polygon(30% 0%, 70% 0%, 85% 30%, 75% 60%, 60% 100%, 40% 100%, 25% 60%, 15% 30%); }
     .top .outline    { width:160px; height:160px; top:40px; left:40px; clip-path:ellipse(50% 40% at 50% 50%); }
     .side .outline   { width:140px; height:180px; top:30px; left:50px; clip-path:polygon(40% 0%, 60% 0%, 80% 40%, 70% 80%, 50% 100%, 30% 80%, 20% 40%); }
 
-    /* CHISEL & HANDS */
+    /* HIDDEN DUCK */
+    #duck { position:absolute; width:140px; height:140px; top:50px; left:50px; background:#FFD700; border-radius:50% 50% 40% 40%; transform:translateZ(1px); pointer-events:none; opacity:0; transition:opacity 0.5s; }
+    #duck.visible { opacity:1; }
+
+    /* TOOLS */
     #tools { position:absolute; bottom:10%; left:50%; transform:translateX(-50%); pointer-events:none; z-index:10; }
     .hand { width:70px; height:120px; background:#F4C2A1; border-radius:40px 40px 15px 15px; position:absolute; bottom:0; }
     .hand.left { left:-60px; transform:rotate(-25deg); }
@@ -50,12 +54,13 @@
     @keyframes fall { to { transform:translateY(400px) rotate(1080deg); opacity:0; } }
 
     /* UI */
-    h1 { position:absolute; top:15%; left:50%; transform:translateX(-50%); font-size:36px; text-shadow:0 0 20px #ff0044; animation:pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { text-shadow:0 0 20px #ff0044; } 50% { text-shadow:0 0 40px #ff0044,0 0 50px #ff0044; } }
-    .tagline { position:absolute; top:25%; left:50%; transform:translateX(-50%); font-size:18px; color:#ccc; }
-    #start { position:absolute; bottom:15%; left:50%; transform:translateX(-50%); background:#ff0044; color:white; border:none; padding:16px 40px; font-size:24px; font-weight:bold; border-radius:50px; cursor:pointer; box-shadow:0 0 30px #ff0044; animation:glow 1.5s infinite; }
-    @keyframes glow { 0%,100% { box-shadow:0 0 30px #ff0044; } 50% { box-shadow:0 0 50px #ff0044,0 0 60px #ff0044; } }
-    #start:hover { transform:translateX(-50%) scale(1.1); }
+    h1 { position:absolute; top:5%; left:50%; transform:translateX(-50%); font-size:36px; text-shadow:0 0 20px #ff0044; }
+    .score { position:absolute; top:15%; left:50%; transform:translateX(-50%); font-size:20px; color:#39ff14; }
+    .tools-ui { position:absolute; bottom:15%; left:50%; transform:translateX(-50%); display:flex; gap:10px; }
+    .tool-btn { background:#333; color:white; border:2px solid #ff0044; padding:8px 16px; border-radius:30px; cursor:pointer; font-size:14px; }
+    .tool-btn.active { background:#ff0044; }
+    #export { position:absolute; bottom:8%; left:50%; transform:translateX(-50%); background:#ffd700; color:#000; padding:8px 20px; border:none; border-radius:30px; cursor:pointer; font-size:14px; }
+    #level { position:absolute; top:20%; left:50%; transform:translateX(-50%); font-size:16px; color:#aaa; }
   </style>
 </head>
 <body>
@@ -67,6 +72,7 @@
       <div class="face left"><div class="outline side"></div></div>
       <div class="face top"><div class="outline"></div></div>
       <div class="face bottom"><div class="outline"></div></div>
+      <div id="duck"></div>
     </div>
     <div id="tools">
       <div class="hand left"></div>
@@ -75,21 +81,38 @@
     </div>
   </div>
   <h1>CHAOS CARVER</h1>
-  <div class="tagline">Carve Anything. Be the Master.</div>
-  <button id="start">TAP TO CARVE</button>
+  <div class="score">Score: <span id="score">0</span>%</div>
+  <div id="level">Level 1 / 10</div>
+  <div class="tools-ui">
+    <button class="tool-btn active" data-tool="gouge">Gouge</button>
+    <button class="tool-btn" data-tool="vtool">V-Tool</button>
+    <button class="tool-btn" data-tool="mallet">Mallet</button>
+  </div>
+  <button id="export">Export .OBJ</button>
 
   <script>
     const container = document.getElementById('container');
     const chisel = document.querySelector('.chisel');
     const tools = document.getElementById('tools');
-    const startBtn = document.getElementById('start');
+    const duck = document.getElementById('duck');
+    const scoreEl = document.getElementById('score');
     let isRotating = false, isCarving = false;
     let rotX = -25, rotY = 30;
+    let score = 0;
+    let tool = 'gouge';
 
-    // ROTATE ON DRAG
+    // TOOL SWITCH
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        tool = btn.dataset.tool;
+      });
+    });
+
+    // ROTATE
     let startX, startY;
     document.addEventListener('pointerdown', e => {
-      if (e.target === startBtn) return;
       isRotating = true;
       startX = e.clientX; startY = e.clientY;
     });
@@ -102,18 +125,21 @@
     });
     document.addEventListener('pointerup', () => isRotating = false);
 
-    // CARVE ON TAP
+    // CARVE
     document.addEventListener('pointerdown', e => {
-      if (e.target === startBtn) return;
+      if (e.target.closest('button')) return;
       isCarving = true;
       tools.style.opacity = '1';
-      chisel.style.transform = 'translateX(-50%) rotate(65deg) scale(1.15)';
+      chisel.style.transform = `translateX(-50%) rotate(${tool === 'mallet' ? 70 : 65}deg) scale(1.15)`;
       createChip(e.clientX, e.clientY);
+      playSound();
+      vibrate();
+      updateScore();
     });
     document.addEventListener('pointerup', () => {
       isCarving = false;
       tools.style.opacity = '0.7';
-      chisel.style.transform = 'translateX(-50%) rotate(50deg) scale(1)';
+      chisel.style.transform = `translateX(-50%) rotate(${tool === 'mallet' ? 55 : 50}deg) scale(1)`;
     });
 
     function createChip(x, y) {
@@ -125,13 +151,33 @@
       setTimeout(() => chip.remove(), 1200);
     }
 
-    // START BUTTON
-    startBtn.addEventListener('click', () => {
-      document.body.innerHTML = `<h1 style="margin-top:40vh">Carving Game Loading...</h1>`;
-      setTimeout(() => location.reload(), 1000);
+    function playSound() {
+      const sounds = { gouge: 'chip.mp3', vtool: 'scrape.mp3', mallet: 'thud.mp3' };
+      const audio = new Audio(sounds[tool] || 'chip.mp3');
+      audio.volume = 0.3;
+      audio.play().catch(() => {});
+    }
+
+    function vibrate() {
+      if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+    }
+
+    function updateScore() {
+      score = Math.min(100, score + (tool === 'mallet' ? 3 : 1));
+      scoreEl.textContent = score;
+      if (score > 80) duck.classList.add('visible');
+    }
+
+    // EXPORT .OBJ
+    document.getElementById('export').addEventListener('click', () => {
+      const obj = `# Chaos Carver Export\nv 0 0 0\nv 1 0 0\nf 1 2`;
+      const blob = new Blob([obj], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'carved_duck.obj'; a.click();
     });
 
-    // INITIAL VIEW
+    // INITIAL
     container.style.transform = `rotateX(-25deg) rotateY(30deg)`;
     tools.style.opacity = '0.7';
   </script>

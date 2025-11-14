@@ -4,23 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <meta name="theme-color" content="#8B4513"/>
-  <title>Chaos Carver — Carve Anything</title>
-  <link rel="manifest" href="data:application/manifest+json,{
-    \"name\": \"Chaos Carver\",
-    \"short_name\": \"Carver\",
-    \"start_url\": \".\",
-    \"display\": \"standalone\",
-    \"background_color\": \"#000\",
-    \"theme_color\": \"#8B4513\",
-    \"icons\": [{
-      \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20 10 L80 10 L90 30 L90 70 L80 90 L20 90 L10 70 L10 30 Z' fill='%238B4513'/%3E%3Cpath d='M50 40 L60 50 L55 60 Z' fill='%23D4A574'/%3E%3C/svg%3E\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/svg+xml\"
-    }]
-  }"/>
+  <title>Chaos Carver — RPG Hands</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#000; color:#fff; font-family:'Courier New',monospace; overflow:hidden; touch-action:none; }
+    body { background:#000; overflow:hidden; touch-action:none; }
     #scene { perspective:1200px; width:100vw; height:100vh; display:flex; justify-content:center; align-items:center; }
     #container { transform-style:preserve-3d; width:240px; height:240px; position:relative; }
     .face { position:absolute; width:240px; height:240px; background:#D4A574; border:4px solid #8B5A2B; box-shadow:inset 0 0 30px rgba(0,0,0,0.4); }
@@ -34,85 +21,101 @@
     /* OUTLINES */
     .outline { position:absolute; border:4px dashed #00f; pointer-events:none; }
     .front .outline  { width:160px; height:140px; top:50px; left:40px; clip-path:polygon(30% 0%, 70% 0%, 85% 30%, 75% 60%, 60% 100%, 40% 100%, 25% 60%, 15% 30%); }
-    .top .outline    { width:160px; height:160px; top:40px; left:40px; clip-path:ellipse(50% 40% at 50% 50%); }
-    .side .outline   { width:140px; height:180px; top:30px; left:50px; clip-path:polygon(40% 0%, 60% 0%, 80% 40%, 70% 80%, 50% 100%, 30% 80%, 20% 40%); }
 
-    /* HIDDEN DUCK */
-    #duck { position:absolute; width:140px; height:140px; top:50px; left:50px; background:#FFD700; border-radius:50% 50% 40% 40%; transform:translateZ(1px); pointer-events:none; opacity:0; transition:opacity 0.5s; }
-    #duck.visible { opacity:1; }
+    /* RPG-STYLE HANDS */
+    #hands { position:absolute; bottom:10%; left:50%; transform:translateX(-50%); pointer-events:none; z-index:10; }
+    .hand-svg { width:80px; height:140px; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6)); }
+    .hand-svg.left { transform:translateX(-70px) rotate(-20deg); }
+    .hand-svg.right { transform:translateX(10px) rotate(20deg); }
 
-    /* TOOLS */
-    #tools { position:absolute; bottom:10%; left:50%; transform:translateX(-50%); pointer-events:none; z-index:10; }
-    .hand { width:70px; height:120px; background:#F4C2A1; border-radius:40px 40px 15px 15px; position:absolute; bottom:0; }
-    .hand.left { left:-60px; transform:rotate(-25deg); }
-    .hand.right { left:10px; transform:rotate(25deg); }
-    .chisel { width:10px; height:100px; background:linear-gradient(#ddd, #aaa); position:absolute; bottom:100px; left:50%; transform:translateX(-50%) rotate(50deg); border-radius:6px 6px 0 0; box-shadow:0 0 15px rgba(0,0,0,0.6); }
-    .chisel::after { content:''; width:25px; height:25px; background:#666; position:absolute; bottom:-12px; left:-8px; border-radius:50%; }
+    /* CHISEL */
+    .chisel { width:12px; height:110px; background:linear-gradient(45deg, #ccc, #aaa, #999); position:absolute; bottom:110px; left:50%; transform:translateX(-50%) rotate(55deg); border-radius:6px 6px 0 0; box-shadow:0 0 15px rgba(0,0,0,0.7); }
+    .chisel::after { content:''; width:28px; height:28px; background:#555; position:absolute; bottom:-14px; left:-8px; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.5); }
 
     /* PARTICLES */
     .chip { position:absolute; width:8px; height:8px; background:#D4A574; border-radius:50%; pointer-events:none; animation:fall 1.2s linear forwards; }
     @keyframes fall { to { transform:translateY(400px) rotate(1080deg); opacity:0; } }
 
     /* UI */
-    h1 { position:absolute; top:5%; left:50%; transform:translateX(-50%); font-size:36px; text-shadow:0 0 20px #ff0044; }
-    .score { position:absolute; top:15%; left:50%; transform:translateX(-50%); font-size:20px; color:#39ff14; }
-    .tools-ui { position:absolute; bottom:15%; left:50%; transform:translateX(-50%); display:flex; gap:10px; }
-    .tool-btn { background:#333; color:white; border:2px solid #ff0044; padding:8px 16px; border-radius:30px; cursor:pointer; font-size:14px; }
-    .tool-btn.active { background:#ff0044; }
-    #export { position:absolute; bottom:8%; left:50%; transform:translateX(-50%); background:#ffd700; color:#000; padding:8px 20px; border:none; border-radius:30px; cursor:pointer; font-size:14px; }
-    #level { position:absolute; top:20%; left:50%; transform:translateX(-50%); font-size:16px; color:#aaa; }
+    h1 { position:absolute; top:10%; left:50%; transform:translateX(-50%); font-size:36px; text-shadow:0 0 20px #ff0044; }
+    #start { position:absolute; bottom:15%; left:50%; transform:translateX(-50%); background:#ff0044; color:white; border:none; padding:16px 40px; font-size:24px; font-weight:bold; border-radius:50px; cursor:pointer; box-shadow:0 0 30px #ff0044; }
   </style>
 </head>
 <body>
   <div id="scene">
     <div id="container">
       <div class="face front"><div class="outline"></div></div>
-      <div class="face back"><div class="outline side"></div></div>
-      <div class="face right"><div class="outline side"></div></div>
-      <div class="face left"><div class="outline side"></div></div>
-      <div class="face top"><div class="outline"></div></div>
-      <div class="face bottom"><div class="outline"></div></div>
-      <div id="duck"></div>
+      <div class="face back"></div>
+      <div class="face right"></div>
+      <div class="face left"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
     </div>
-    <div id="tools">
-      <div class="hand left"></div>
-      <div class="hand right"></div>
+
+    <!-- RPG HANDS (SVG) -->
+    <div id="hands">
+      <svg class="hand-svg left" viewBox="0 0 80 140">
+        <defs>
+          <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#F4C2A1"/>
+            <stop offset="100%" stop-color="#E8B090"/>
+          </linearGradient>
+          <filter id="shadow">
+            <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+        <!-- Palm -->
+        <path d="M30 80 Q20 100 25 120 Q30 130 40 130 Q50 130 55 120 Q60 100 50 80 Z" fill="url(#skin)" filter="url(#shadow)"/>
+        <!-- Thumb -->
+        <path d="M25 85 Q15 90 15 100 Q15 110 20 115 Q25 118 30 115 Q32 110 30 100 Z" fill="#E8B090"/>
+        <!-- Fingers -->
+        <path d="M35 75 Q33 60 38 50 Q40 45 45 48 Q48 55 45 65 Z" fill="#E8B090"/>
+        <path d="M45 72 Q43 55 48 45 Q50 40 55 43 Q58 50 55 60 Z" fill="#E8B090"/>
+        <path d="M55 75 Q53 60 58 50 Q60 45 65 48 Q68 55 65 65 Z" fill="#E8B090"/>
+        <!-- Knuckles -->
+        <ellipse cx="40" cy="78" rx="8" ry="6" fill="#D4A070"/>
+        <ellipse cx="50" cy="75" rx="8" ry="6" fill="#D4A070"/>
+        <ellipse cx="60" cy="78" rx="8" ry="6" fill="#D4A070"/>
+        <!-- Nails -->
+        <path d="M38 50 Q40 48 42 50" stroke="#C0A080" stroke-width="2" fill="none"/>
+        <path d="M48 45 Q50 43 52 45" stroke="#C0A080" stroke-width="2" fill="none"/>
+        <path d="M58 50 Q60 48 62 50" stroke="#C0A080" stroke-width="2" fill="none"/>
+      </svg>
+
+      <svg class="hand-svg right" viewBox="0 0 80 140">
+        <use href="#skin" />
+        <!-- Mirror of left hand -->
+        <path d="M50 80 Q60 100 55 120 Q50 130 40 130 Q30 130 25 120 Q20 100 30 80 Z" fill="url(#skin)" filter="url(#shadow)"/>
+        <path d="M55 85 Q65 90 65 100 Q65 110 60 115 Q55 118 50 115 Q48 110 50 100 Z" fill="#E8B090"/>
+        <path d="M45 75 Q47 60 42 50 Q40 45 35 48 Q32 55 35 65 Z" fill="#E8B090"/>
+        <path d="M35 72 Q37 55 32 45 Q30 40 25 43 Q22 50 25 60 Z" fill="#E8B090"/>
+        <path d="M25 75 Q27 60 22 50 Q20 45 15 48 Q12 55 15 65 Z" fill="#E8B090"/>
+        <ellipse cx="40" cy="78" rx="8" ry="6" fill="#D4A070"/>
+        <ellipse cx="30" cy="75" rx="8" ry="6" fill="#D4A070"/>
+        <ellipse cx="20" cy="78" rx="8" ry="6" fill="#D4A070"/>
+        <path d="M42 50 Q40 48 38 50" stroke="#C0A080" stroke-width="2" fill="none"/>
+        <path d="M32 45 Q30 43 28 45" stroke="#C0A080" stroke-width="2" fill="none"/>
+        <path d="M22 50 Q20 48 18 50" stroke="#C0A080" stroke-width="2" fill="none"/>
+      </svg>
+
       <div class="chisel"></div>
     </div>
   </div>
+
   <h1>CHAOS CARVER</h1>
-  <div class="score">Score: <span id="score">0</span>%</div>
-  <div id="level">Level 1 / 10</div>
-  <div class="tools-ui">
-    <button class="tool-btn active" data-tool="gouge">Gouge</button>
-    <button class="tool-btn" data-tool="vtool">V-Tool</button>
-    <button class="tool-btn" data-tool="mallet">Mallet</button>
-  </div>
-  <button id="export">Export .OBJ</button>
+  <button id="start">TAP TO CARVE</button>
 
   <script>
     const container = document.getElementById('container');
     const chisel = document.querySelector('.chisel');
-    const tools = document.getElementById('tools');
-    const duck = document.getElementById('duck');
-    const scoreEl = document.getElementById('score');
-    let isRotating = false, isCarving = false;
+    const hands = document.getElementById('hands');
+    let isCarving = false;
     let rotX = -25, rotY = 30;
-    let score = 0;
-    let tool = 'gouge';
-
-    // TOOL SWITCH
-    document.querySelectorAll('.tool-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        tool = btn.dataset.tool;
-      });
-    });
 
     // ROTATE
-    let startX, startY;
+    let isRotating = false, startX, startY;
     document.addEventListener('pointerdown', e => {
+      if (e.target.tagName === 'BUTTON') return;
       isRotating = true;
       startX = e.clientX; startY = e.clientY;
     });
@@ -127,19 +130,16 @@
 
     // CARVE
     document.addEventListener('pointerdown', e => {
-      if (e.target.closest('button')) return;
+      if (e.target.tagName === 'BUTTON') return;
       isCarving = true;
-      tools.style.opacity = '1';
-      chisel.style.transform = `translateX(-50%) rotate(${tool === 'mallet' ? 70 : 65}deg) scale(1.15)`;
+      hands.style.opacity = '1';
+      chisel.style.transform = 'translateX(-50%) rotate(70deg) scale(1.2)';
       createChip(e.clientX, e.clientY);
-      playSound();
-      vibrate();
-      updateScore();
     });
     document.addEventListener('pointerup', () => {
       isCarving = false;
-      tools.style.opacity = '0.7';
-      chisel.style.transform = `translateX(-50%) rotate(${tool === 'mallet' ? 55 : 50}deg) scale(1)`;
+      hands.style.opacity = '0.7';
+      chisel.style.transform = 'translateX(-50%) rotate(55deg) scale(1)';
     });
 
     function createChip(x, y) {
@@ -151,35 +151,9 @@
       setTimeout(() => chip.remove(), 1200);
     }
 
-    function playSound() {
-      const sounds = { gouge: 'chip.mp3', vtool: 'scrape.mp3', mallet: 'thud.mp3' };
-      const audio = new Audio(sounds[tool] || 'chip.mp3');
-      audio.volume = 0.3;
-      audio.play().catch(() => {});
-    }
-
-    function vibrate() {
-      if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
-    }
-
-    function updateScore() {
-      score = Math.min(100, score + (tool === 'mallet' ? 3 : 1));
-      scoreEl.textContent = score;
-      if (score > 80) duck.classList.add('visible');
-    }
-
-    // EXPORT .OBJ
-    document.getElementById('export').addEventListener('click', () => {
-      const obj = `# Chaos Carver Export\nv 0 0 0\nv 1 0 0\nf 1 2`;
-      const blob = new Blob([obj], {type: 'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'carved_duck.obj'; a.click();
-    });
-
     // INITIAL
     container.style.transform = `rotateX(-25deg) rotateY(30deg)`;
-    tools.style.opacity = '0.7';
+    hands.style.opacity = '0.7';
   </script>
 </body>
 </html>

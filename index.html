@@ -22,23 +22,23 @@
     .outline { position:absolute; border:4px dashed #00f; pointer-events:none; }
     .front .outline  { width:160px; height:140px; top:50px; left:40px; clip-path:polygon(30% 0%, 70% 0%, 85% 30%, 75% 60%, 60% 100%, 40% 100%, 25% 60%, 15% 30%); }
 
-    /* 3D MESH HANDS (LEATHER GLOVES + CHISEL) */
-    #hands { position:absolute; bottom:5%; left:50%; transform:translateX(-50%) translateZ(80px); pointer-events:none; z-index:10; }
-    .hand-mesh { width:140px; height:200px; position:absolute; filter:drop-shadow(0 12px 24px rgba(0,0,0,0.8)); }
-    .hand-mesh.left { left:-100px; transform:rotateY(-30deg) rotateX(-10deg); }
-    .hand-mesh.right { left:40px; transform:rotateY(30deg) rotateX(-10deg); }
+    /* 3D MESH HANDS (MALE, RPG, FIRST-PERSON) */
+    #hands { position:absolute; bottom:5%; left:50%; transform:translateX(-50%) translateZ(100px); pointer-events:none; z-index:10; }
+    .hand-mesh { width:160px; height:220px; position:absolute; filter:drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
+    .hand-mesh.left { left:-110px; transform:rotateY(-35deg) rotateX(-15deg); }
+    .hand-mesh.right { left:50px; transform:rotateY(35deg) rotateX(-15deg); }
 
     /* CHISEL */
-    .chisel { width:18px; height:140px; background:linear-gradient(45deg, #f0f0f0, #ccc, #aaa); position:absolute; bottom:140px; left:50%; transform:translateX(-50%) rotate(65deg); border-radius:10px 10px 0 0; box-shadow:0 0 25px rgba(0,0,0,0.9); }
-    .chisel::after { content:''; width:40px; height:40px; background:#444; position:absolute; bottom:-20px; left:-11px; border-radius:50%; box-shadow:0 4px 8px rgba(0,0,0,0.7); }
-
-    /* UI */
-    #start { position:absolute; top:10%; left:50%; transform:translateX(-50%); background:#ff0044; color:white; border:none; padding:16px 40px; font-size:24px; font-weight:bold; border-radius:50px; cursor:pointer; box-shadow:0 0 30px #ff0044; z-index:20; }
-    h1 { position:absolute; top:5%; left:50%; transform:translateX(-50%); font-size:36px; text-shadow:0 0 20px #ff0044; z-index:20; }
+    .chisel { width:20px; height:150px; background:linear-gradient(45deg, #f5f5f5, #ddd, #bbb); position:absolute; bottom:150px; left:50%; transform:translateX(-50%) rotate(70deg); border-radius:12px 12px 0 0; box-shadow:0 0 30px rgba(0,0,0,1); }
+    .chisel::after { content:''; width:45px; height:45px; background:#333; position:absolute; bottom:-22px; left:-12px; border-radius:50%; box-shadow:0 5px 10px rgba(0,0,0,0.8); }
 
     /* PARTICLES */
-    .chip { position:absolute; width:12px; height:12px; background:#D4A574; border-radius:50%; pointer-events:none; animation:fall 1.3s linear forwards; }
-    @keyframes fall { to { transform:translateY(500px) rotate(1440deg); opacity:0; } }
+    .chip { position:absolute; width:14px; height:14px; background:#D4A574; border-radius:50%; pointer-events:none; animation:fall 1.4s linear forwards; }
+    @keyframes fall { to { transform:translateY(600px) rotate(1800deg); opacity:0; } }
+
+    /* UI — BUTTON AT TOP */
+    #start { position:absolute; top:5%; left:50%; transform:translateX(-50%); background:#ff0044; color:white; border:none; padding:14px 36px; font-size:22px; font-weight:bold; border-radius:50px; cursor:pointer; box-shadow:0 0 40px #ff0044; z-index:100; }
+    h1 { position:absolute; top:12%; left:50%; transform:translateX(-50%); font-size:32px; text-shadow:0 0 25px #ff0044; z-index:100; }
   </style>
 </head>
 <body>
@@ -55,97 +55,92 @@
       <div class="face bottom"></div>
     </div>
 
-    <!-- 3D MESH HANDS (LEATHER GLOVES + CHISEL) -->
+    <!-- 3D MESH HANDS (MALE, RPG, FIRST-PERSON) -->
     <div id="hands">
       <!-- LEFT HAND -->
-      <svg class="hand-mesh left" viewBox="0 0 140 200">
+      <svg class="hand-mesh left" viewBox="0 0 160 220">
         <defs>
-          <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#5D4037"/>
-            <stop offset="100%" stop-color="#3E2723"/>
+          <linearGradient id="skin-mesh" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#F4C2A1"/>
+            <stop offset="100%" stop-color="#E8B090"/>
           </linearGradient>
-          <filter id="leather-shadow">
-            <feDropShadow dx="4" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.7"/>
+          <filter id="mesh-shadow">
+            <feDropShadow dx="6" dy="12" stdDeviation="10" flood-color="#000" flood-opacity="0.8"/>
           </filter>
-          <filter id="stitching">
-            <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="2" result="turb"/>
-            <feDisplacementMap in="SourceGraphic" in2="turb" scale="2"/>
+          <filter id="cinematic-dof">
+            <feGaussianBlur stdDeviation="1"/>
           </filter>
         </defs>
 
-        <!-- Glove Base -->
-        <path d="M45 120 Q30 150 35 180 Q40 195 55 195 Q70 195 75 180 Q80 150 65 120 Z" 
-              fill="url(#leather)" filter="url(#leather-shadow) url(#stitching)"/>
+        <!-- Palm (3D depth) -->
+        <path d="M50 140 Q35 175 40 205 Q45 220 60 220 Q75 220 80 205 Q85 175 70 140 Z" 
+              fill="url(#skin-mesh)" filter="url(#mesh-shadow) url(#cinematic-dof)" stroke="#D4A070" stroke-width="2"/>
 
-        <!-- Thumb -->
-        <path d="M40 125 Q25 130 25 145 Q25 160 32 168 Q40 172 48 168 Q52 160 48 145 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
+        <!-- Thumb (tension grip) -->
+        <path d="M45 145 Q30 150 30 165 Q30 180 38 188 Q45 192 53 188 Q57 180 53 165 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
 
-        <!-- Index Finger -->
-        <path d="M55 115 Q52 90 58 70 Q60 65 68 68 Q72 78 68 95 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="63" cy="72" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M58 70 Q63 67 68 70" stroke="#6D4C41" stroke-width="2" fill="none"/>
+        <!-- Index Finger (bent) -->
+        <path d="M65 135 Q62 105 68 85 Q70 80 78 83 Q82 93 78 110 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="73" cy="87" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M68 85 Q73 82 78 85" stroke="#C0A080" stroke-width="3" fill="none"/>
 
-        <!-- Middle Finger -->
-        <path d="M70 112 Q67 85 73 65 Q75 60 83 63 Q87 73 83 90 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="78" cy="67" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M73 65 Q78 62 83 65" stroke="#6D4C41" stroke-width="2" fill="none"/>
+        <!-- Middle Finger (bent) -->
+        <path d="M80 132 Q77 100 83 80 Q85 75 93 78 Q97 88 93 105 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="88" cy="82" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M83 80 Q88 77 93 80" stroke="#C0A080" stroke-width="3" fill="none"/>
 
-        <!-- Ring Finger -->
-        <path d="M85 115 Q82 90 88 70 Q90 65 98 68 Q102 78 98 95 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="93" cy="72" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M88 70 Q93 67 98 70" stroke="#6D4C41" stroke-width="2" fill="none"/>
+        <!-- Ring Finger (bent) -->
+        <path d="M95 135 Q92 105 98 85 Q100 80 108 83 Q112 93 108 110 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="103" cy="87" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M98 85 Q103 82 108 85" stroke="#C0A080" stroke-width="3" fill="none"/>
 
-        <!-- Pinky -->
-        <path d="M100 125 Q97 105 100 90 Q101 87 103 89 Q104 93 103 100 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="101" cy="91" rx="6" ry="5" fill="#5D4037"/>
+        <!-- Pinky (bent) -->
+        <path d="M110 145 Q107 125 110 110 Q111 107 113 109 Q114 113 113 120 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="111" cy="111" rx="7" ry="6" fill="#D4A070"/>
 
-        <!-- Brass Rivets -->
-        <circle cx="50" cy="135" r="3" fill="#B8860B"/>
-        <circle cx="60" cy="132" r="3" fill="#B8860B"/>
-        <circle cx="70" cy="135" r="3" fill="#B8860B"/>
-        <circle cx="55" cy="145" r="3" fill="#B8860B"/>
-
-        <!-- Stitching -->
-        <path d="M40 130 Q45 128 50 130 M55 128 Q60 126 65 128 M70 130 Q75 128 80 130" 
-              stroke="#6D4C41" stroke-width="1" fill="none" opacity="0.8"/>
+        <!-- Knuckles & Veins -->
+        <ellipse cx="60" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <ellipse cx="75" cy="135" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <ellipse cx="90" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <path d="M50 150 Q55 148 60 150 M65 148 Q70 146 75 148 M80 150 Q85 148 90 150" 
+              stroke="#C0A080" stroke-width="1.5" opacity="0.7"/>
       </svg>
 
       <!-- RIGHT HAND (MIRRORED) -->
-      <svg class="hand-mesh right" viewBox="0 0 140 200">
-        <use href="#leather"/>
-        <use href="#leather-shadow"/>
-        <use href="#stitching"/>
+      <svg class="hand-mesh right" viewBox="0 0 160 220">
+        <use href="#skin-mesh"/>
+        <use href="#mesh-shadow"/>
+        <use href="#cinematic-dof"/>
 
-        <path d="M95 120 Q110 150 105 180 Q100 195 85 195 Q70 195 65 180 Q60 150 75 120 Z" 
-              fill="url(#leather)" filter="url(#leather-shadow) url(#stitching)"/>
-        <path d="M100 125 Q115 130 115 145 Q115 160 108 168 Q100 172 92 168 Q88 160 92 145 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <path d="M85 115 Q88 90 82 70 Q80 65 72 68 Q68 78 72 95 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="77" cy="72" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M82 70 Q77 67 72 70" stroke="#6D4C41" stroke-width="2" fill="none"/>
-        <path d="M70 112 Q73 85 67 65 Q65 60 57 63 Q53 73 57 90 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="62" cy="67" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M67 65 Q62 62 57 65" stroke="#6D4C41" stroke-width="2" fill="none"/>
-        <path d="M55 115 Q58 90 52 70 Q50 65 42 68 Q38 78 42 95 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="47" cy="72" rx="8" ry="7" fill="#5D4037"/>
-        <path d="M52 70 Q47 67 42 70" stroke="#6D4C41" stroke-width="2" fill="none"/>
-        <path d="M40 125 Q43 105 40 90 Q39 87 37 89 Q36 93 37 100 Z" 
-              fill="#4E342E" stroke="#3E2723" stroke-width="1.5"/>
-        <ellipse cx="39" cy="91" rx="6" ry="5" fill="#5D4037"/>
-        <circle cx="90" cy="135" r="3" fill="#B8860B"/>
-        <circle cx="80" cy="132" r="3" fill="#B8860B"/>
-        <circle cx="70" cy="135" r="3" fill="#B8860B"/>
-        <circle cx="85" cy="145" r="3" fill="#B8860B"/>
-        <path d="M100 130 Q95 128 90 130 M85 128 Q80 126 75 128 M70 130 Q65 128 60 130" 
-              stroke="#6D4C41" stroke-width="1" fill="none" opacity="0.8"/>
+        <path d="M110 140 Q125 175 120 205 Q115 220 100 220 Q85 220 80 205 Q75 175 90 140 Z" 
+              fill="url(#skin-mesh)" filter="url(#mesh-shadow) url(#cinematic-dof)" stroke="#D4A070" stroke-width="2"/>
+        <path d="M115 145 Q130 150 130 165 Q130 180 122 188 Q115 192 107 188 Q103 180 107 165 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <path d="M95 135 Q98 105 92 85 Q90 80 82 83 Q78 93 82 110 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="87" cy="87" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M92 85 Q87 82 82 85" stroke="#C0A080" stroke-width="3" fill="none"/>
+        <path d="M80 132 Q83 100 77 80 Q75 75 67 78 Q63 88 67 105 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="72" cy="82" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M77 80 Q72 77 67 80" stroke="#C0A080" stroke-width="3" fill="none"/>
+        <path d="M65 135 Q68 105 62 85 Q60 80 52 83 Q48 93 52 110 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="57" cy="87" rx="10" ry="8" fill="#D4A070"/>
+        <path d="M62 85 Q57 82 52 85" stroke="#C0A080" stroke-width="3" fill="none"/>
+        <path d="M50 145 Q53 125 50 110 Q49 107 47 109 Q46 113 47 120 Z" 
+              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+        <ellipse cx="49" cy="111" rx="7" ry="6" fill="#D4A070"/>
+        <ellipse cx="100" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <ellipse cx="85" cy="135" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <ellipse cx="70" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
+        <path d="M110 150 Q105 148 100 150 M95 148 Q90 146 85 148 M80 150 Q75 148 70 150" 
+              stroke="#C0A080" stroke-width="1.5" opacity="0.7"/>
       </svg>
 
       <div class="chisel"></div>
@@ -180,13 +175,13 @@
       if (e.target.id === 'start') return;
       isCarving = true;
       hands.style.opacity = '1';
-      chisel.style.transform = 'translateX(-50%) rotate(75deg) scale(1.25)';
+      chisel.style.transform = 'translateX(-50%) rotate(80deg) scale(1.3)';
       createChip(e.clientX, e.clientY);
     });
     document.addEventListener('pointerup', () => {
       isCarving = false;
-      hands.style.opacity = '0.8';
-      chisel.style.transform = 'translateX(-50%) rotate(65deg) scale(1)';
+      hands.style.opacity = '0.85';
+      chisel.style.transform = 'translateX(-50%) rotate(70deg) scale(1)';
     });
 
     function createChip(x, y) {
@@ -195,12 +190,12 @@
       chip.style.left = x + 'px';
       chip.style.top = y + 'px';
       document.body.appendChild(chip);
-      setTimeout(() => chip.remove(), 1300);
+      setTimeout(() => chip.remove(), 1400);
     }
 
     // INITIAL
     container.style.transform = `rotateX(-25deg) rotateY(30deg)`;
-    hands.style.opacity = '0.8';
+    hands.style.opacity = '0.85';
   </script>
 </body>
 </html>

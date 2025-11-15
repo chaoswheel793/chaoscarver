@@ -55,7 +55,7 @@
       });
       scene.add(hand);
       document.getElementById('name').classList.add('visible');
-    }, undefined, err => console.error('Hand load failed:', err));
+    });
 
     const block = new THREE.Mesh(
       new THREE.BoxGeometry(1.4,1.4,1.4),

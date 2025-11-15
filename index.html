@@ -3,199 +3,230 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#8B4513"/>
-  <title>Chaos Carver — 3D Mesh Hands</title>
+  <title>Chaos Carver — Choose Your Hands</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#000; overflow:hidden; touch-action:none; font-family:'Courier New',monospace; }
-    #scene { perspective:1200px; width:100vw; height:100vh; display:flex; justify-content:center; align-items:center; }
-    #container { transform-style:preserve-3d; width:240px; height:240px; position:relative; }
-    .face { position:absolute; width:240px; height:240px; background:#D4A574; border:4px solid #8B5A2B; box-shadow:inset 0 0 30px rgba(0,0,0,0.4); }
-    .face.front  { transform:translateZ(120px); }
-    .face.back   { transform:rotateY(180deg) translateZ(120px); }
-    .face.right  { transform:rotateY(90deg) translateZ(120px); }
-    .face.left   { transform:rotateY(-90deg) translateZ(120px); }
-    .face.top    { transform:rotateX(90deg) translateZ(120px); }
-    .face.bottom { transform:rotateX(-90deg) translateZ(120px); }
-
-    /* OUTLINES */
-    .outline { position:absolute; border:4px dashed #00f; pointer-events:none; }
-    .front .outline  { width:160px; height:140px; top:50px; left:40px; clip-path:polygon(30% 0%, 70% 0%, 85% 30%, 75% 60%, 60% 100%, 40% 100%, 25% 60%, 15% 30%); }
-
-    /* 3D MESH HANDS (MALE, RPG, FIRST-PERSON) */
-    #hands { position:absolute; bottom:5%; left:50%; transform:translateX(-50%) translateZ(100px); pointer-events:none; z-index:10; }
-    .hand-mesh { width:160px; height:220px; position:absolute; filter:drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
-    .hand-mesh.left { left:-110px; transform:rotateY(-35deg) rotateX(-15deg); }
-    .hand-mesh.right { left:50px; transform:rotateY(35deg) rotateX(-15deg); }
-
-    /* CHISEL */
-    .chisel { width:20px; height:150px; background:linear-gradient(45deg, #f5f5f5, #ddd, #bbb); position:absolute; bottom:150px; left:50%; transform:translateX(-50%) rotate(70deg); border-radius:12px 12px 0 0; box-shadow:0 0 30px rgba(0,0,0,1); }
-    .chisel::after { content:''; width:45px; height:45px; background:#333; position:absolute; bottom:-22px; left:-12px; border-radius:50%; box-shadow:0 5px 10px rgba(0,0,0,0.8); }
-
-    /* PARTICLES */
-    .chip { position:absolute; width:14px; height:14px; background:#D4A574; border-radius:50%; pointer-events:none; animation:fall 1.4s linear forwards; }
-    @keyframes fall { to { transform:translateY(600px) rotate(1800deg); opacity:0; } }
-
-    /* UI — BUTTON AT TOP */
-    #start { position:absolute; top:5%; left:50%; transform:translateX(-50%); background:#ff0044; color:white; border:none; padding:14px 36px; font-size:22px; font-weight:bold; border-radius:50px; cursor:pointer; box-shadow:0 0 40px #ff0044; z-index:100; }
-    h1 { position:absolute; top:12%; left:50%; transform:translateX(-50%); font-size:32px; text-shadow:0 0 25px #ff0044; z-index:100; }
+    body { background:#111; overflow-y:auto; touch-action:none; font-family:'Courier New',monospace; color:white; text-align:center; }
+    h1 { font-size:36px; margin:30px; text-shadow:0 0 20px #ff0044; }
+    .subtitle { font-size:18px; margin:20px; color:#ccc; }
+    .hand-pair { margin:60px 0; }
+    .hand-pair h2 { font-size:28px; margin:15px; color:#39ff14; text-shadow:0 0 10px #39ff14; }
+    #hands-container { display:flex; flex-wrap:wrap; justify-content:center; gap:40px; padding:20px; }
+    .hand-wrapper { position:relative; width:180px; height:260px; }
+    .hand-svg { width:100%; height:100%; filter:drop-shadow(0 12px 24px rgba(0,0,0,0.8)); }
+    .chisel { position:absolute; width:18px; height:130px; background:linear-gradient(45deg, #f0f0f0, #ccc, #aaa); left:50%; bottom:130px; transform:translateX(-50%) rotate(70deg); border-radius:10px 10px 0 0; box-shadow:0 0 25px rgba(0,0,0,0.9); }
+    .chisel::after { content:''; width:40px; height:40px; background:#444; position:absolute; bottom:-20px; left:-11px; border-radius:50%; box-shadow:0 4px 8px rgba(0,0,0,0.7); }
+    .note { margin:30px; font-size:16px; color:#aaa; }
+    .tap-hint { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); font-size:12px; color:#666; }
   </style>
 </head>
 <body>
-  <button id="start">TAP TO CARVE</button>
   <h1>CHAOS CARVER</h1>
+  <div class="subtitle">Choose Your RPG Hands — Tap to Animate</div>
+  <div class="note">Tell me #1–10 which you like best</div>
 
-  <div id="scene">
-    <div id="container">
-      <div class="face front"><div class="outline"></div></div>
-      <div class="face back"></div>
-      <div class="face right"></div>
-      <div class="face left"></div>
-      <div class="face top"></div>
-      <div class="face bottom"></div>
+  <div id="hands-container">
+    <!-- HAND 1: BARE WARRIOR -->
+    <div class="hand-pair">
+      <h2>#1 Bare Warrior</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <defs>
+            <linearGradient id="skin1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#F4C2A1"/>
+              <stop offset="100%" stop-color="#D4A070"/>
+            </linearGradient>
+            <filter id="scar">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3"/>
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.8 0 0 0  0 0 0.6 0 0  0 0 0 1 0"/>
+            </filter>
+          </defs>
+          <!-- Palm -->
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="url(#skin1)" stroke="#B8860B" stroke-width="2" filter="url(#scar)"/>
+          <!-- Thumb -->
+          <path d="M50 165 Q35 170 35 185 Q35 200 42 208 Q50 212 58 208 Q62 200 58 185 Z" 
+                fill="#E8B090" stroke="#D4A070" stroke-width="2"/>
+          <!-- Fingers (scarred) -->
+          <path d="M70 155 Q67 125 73 105 Q75 100 83 103 Q87 113 83 130 Z" fill="#E8B090" stroke="#D4A070" stroke-width="2"/>
+          <ellipse cx="78" cy="107" rx="10" ry="8" fill="#D4A070"/>
+          <path d="M73 105 Q78 102 83 105" stroke="#C0A080" stroke-width="3" fill="none"/>
+          <!-- Knuckle Scars -->
+          <path d="M60 158 L65 162 M75 155 L70 160" stroke="#8B5A2B" stroke-width="2" opacity="0.8"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
     </div>
 
-    <!-- 3D MESH HANDS (MALE, RPG, FIRST-PERSON) -->
-    <div id="hands">
-      <!-- LEFT HAND -->
-      <svg class="hand-mesh left" viewBox="0 0 160 220">
-        <defs>
-          <linearGradient id="skin-mesh" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#F4C2A1"/>
-            <stop offset="100%" stop-color="#E8B090"/>
-          </linearGradient>
-          <filter id="mesh-shadow">
-            <feDropShadow dx="6" dy="12" stdDeviation="10" flood-color="#000" flood-opacity="0.8"/>
-          </filter>
-          <filter id="cinematic-dof">
-            <feGaussianBlur stdDeviation="1"/>
-          </filter>
-        </defs>
+    <!-- HAND 2: LEATHER ASSASSIN -->
+    <div class="hand-pair">
+      <h2>#2 Leather Assassin</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <defs>
+            <linearGradient id="leather2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#5D4037"/>
+              <stop offset="100%" stop-color="#3E2723"/>
+            </linearGradient>
+          </defs>
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="url(#leather2)" stroke="#6D4C41" stroke-width="3"/>
+          <!-- Stitching -->
+          <path d="M50 170 Q55 168 60 170 M65 168 Q70 166 75 168 M80 170 Q85 168 90 170" 
+                stroke="#8D6E63" stroke-width="1.5" fill="none"/>
+          <!-- Rivets -->
+          <circle cx="60" cy="180" r="4" fill="#B8860B"/>
+          <circle cx="75" cy="178" r="4" fill="#B8860B"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Palm (3D depth) -->
-        <path d="M50 140 Q35 175 40 205 Q45 220 60 220 Q75 220 80 205 Q85 175 70 140 Z" 
-              fill="url(#skin-mesh)" filter="url(#mesh-shadow) url(#cinematic-dof)" stroke="#D4A070" stroke-width="2"/>
+    <!-- HAND 3: ANCIENT RUNE -->
+    <div class="hand-pair">
+      <h2>#3 Ancient Rune</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#E8B090" stroke="#00f" stroke-width="2" filter="url(#glow)"/>
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3"/>
+              <feComposite in2="SourceGraphic" operator="over"/>
+            </filter>
+          </defs>
+          <!-- Runes -->
+          <path d="M60 170 L70 180 M75 165 L65 175" stroke="#00f" stroke-width="2" filter="url(#glow)"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Thumb (tension grip) -->
-        <path d="M45 145 Q30 150 30 165 Q30 180 38 188 Q45 192 53 188 Q57 180 53 165 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
+    <!-- HAND 4: IRON GAUNTLET -->
+    <div class="hand-pair">
+      <h2>#4 Iron Gauntlet</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#555" stroke="#333" stroke-width="4"/>
+          <!-- Plates -->
+          <rect x="50" y="170" width="40" height="60" rx="5" fill="#666"/>
+          <circle cx="70" cy="200" r="5" fill="#999"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Index Finger (bent) -->
-        <path d="M65 135 Q62 105 68 85 Q70 80 78 83 Q82 93 78 110 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="73" cy="87" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M68 85 Q73 82 78 85" stroke="#C0A080" stroke-width="3" fill="none"/>
+    <!-- HAND 5: SHADOW THIEF -->
+    <div class="hand-pair">
+      <h2>#5 Shadow Thief</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#222" stroke="#000" stroke-width="3"/>
+          <!-- Smoke -->
+          <ellipse cx="65" cy="200" rx="30" ry="15" fill="#000" opacity="0.5"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Middle Finger (bent) -->
-        <path d="M80 132 Q77 100 83 80 Q85 75 93 78 Q97 88 93 105 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="88" cy="82" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M83 80 Q88 77 93 80" stroke="#C0A080" stroke-width="3" fill="none"/>
+    <!-- HAND 6: ROYAL ARTISAN -->
+    <div class="hand-pair">
+      <h2>#6 Royal Artisan</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#4A148C" stroke="#FFD700" stroke-width="3"/>
+          <!-- Gold Trim -->
+          <path d="M52 162 L88 162" stroke="#FFD700" stroke-width="2"/>
+          <circle cx="70" cy="190" r="8" fill="#FFD700"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Ring Finger (bent) -->
-        <path d="M95 135 Q92 105 98 85 Q100 80 108 83 Q112 93 108 110 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="103" cy="87" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M98 85 Q103 82 108 85" stroke="#C0A080" stroke-width="3" fill="none"/>
+    <!-- HAND 7: BEAST MASTER -->
+    <div class="hand-pair">
+      <h2>#7 Beast Master</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#8D6E63" stroke="#5D4037" stroke-width="3"/>
+          <!-- Fur -->
+          <path d="M50 165 Q48 160 52 158 M60 162 Q58 157 62 155" stroke="#3E2723" stroke-width="2" opacity="0.8"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Pinky (bent) -->
-        <path d="M110 145 Q107 125 110 110 Q111 107 113 109 Q114 113 113 120 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="111" cy="111" rx="7" ry="6" fill="#D4A070"/>
+    <!-- HAND 8: FIRE MAGE -->
+    <div class="hand-pair">
+      <h2>#8 Fire Mage</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#B71C1C" stroke="#FF5722" stroke-width="3" filter="url(#fire-glow)"/>
+          <defs>
+            <filter id="fire-glow">
+              <feGaussianBlur stdDeviation="5"/>
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0.5 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/>
+            </filter>
+          </defs>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-        <!-- Knuckles & Veins -->
-        <ellipse cx="60" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <ellipse cx="75" cy="135" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <ellipse cx="90" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <path d="M50 150 Q55 148 60 150 M65 148 Q70 146 75 148 M80 150 Q85 148 90 150" 
-              stroke="#C0A080" stroke-width="1.5" opacity="0.7"/>
-      </svg>
+    <!-- HAND 9: UNDEAD CARVER -->
+    <div class="hand-pair">
+      <h2>#9 Undead Carver</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="#E8F5E8" stroke="#4CAF50" stroke-width="3"/>
+          <!-- Cracks -->
+          <path d="M60 170 L65 180 M70 165 L75 175" stroke="#2E7D32" stroke-width="2"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
+    </div>
 
-      <!-- RIGHT HAND (MIRRORED) -->
-      <svg class="hand-mesh right" viewBox="0 0 160 220">
-        <use href="#skin-mesh"/>
-        <use href="#mesh-shadow"/>
-        <use href="#cinematic-dof"/>
-
-        <path d="M110 140 Q125 175 120 205 Q115 220 100 220 Q85 220 80 205 Q75 175 90 140 Z" 
-              fill="url(#skin-mesh)" filter="url(#mesh-shadow) url(#cinematic-dof)" stroke="#D4A070" stroke-width="2"/>
-        <path d="M115 145 Q130 150 130 165 Q130 180 122 188 Q115 192 107 188 Q103 180 107 165 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <path d="M95 135 Q98 105 92 85 Q90 80 82 83 Q78 93 82 110 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="87" cy="87" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M92 85 Q87 82 82 85" stroke="#C0A080" stroke-width="3" fill="none"/>
-        <path d="M80 132 Q83 100 77 80 Q75 75 67 78 Q63 88 67 105 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="72" cy="82" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M77 80 Q72 77 67 80" stroke="#C0A080" stroke-width="3" fill="none"/>
-        <path d="M65 135 Q68 105 62 85 Q60 80 52 83 Q48 93 52 110 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="57" cy="87" rx="10" ry="8" fill="#D4A070"/>
-        <path d="M62 85 Q57 82 52 85" stroke="#C0A080" stroke-width="3" fill="none"/>
-        <path d="M50 145 Q53 125 50 110 Q49 107 47 109 Q46 113 47 120 Z" 
-              fill="#E8B090" stroke="#D4A070" stroke-width="2" filter="url(#mesh-shadow)"/>
-        <ellipse cx="49" cy="111" rx="7" ry="6" fill="#D4A070"/>
-        <ellipse cx="100" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <ellipse cx="85" cy="135" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <ellipse cx="70" cy="138" rx="12" ry="10" fill="#D4A070" opacity="0.8"/>
-        <path d="M110 150 Q105 148 100 150 M95 148 Q90 146 85 148 M80 150 Q75 148 70 150" 
-              stroke="#C0A080" stroke-width="1.5" opacity="0.7"/>
-      </svg>
-
-      <div class="chisel"></div>
+    <!-- HAND 10: DRAGON SCALE -->
+    <div class="hand-pair">
+      <h2>#10 Dragon Scale</h2>
+      <div class="hand-wrapper">
+        <svg class="hand-svg" viewBox="0 0 180 260">
+          <defs>
+            <pattern id="scale" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M10,0 Q15,5 10,10 Q5,15 0,10 Q5,5 10,0 Z" fill="#4CAF50"/>
+            </pattern>
+          </defs>
+          <path d="M55 160 Q40 195 45 225 Q50 240 65 240 Q80 240 85 225 Q90 195 75 160 Z" 
+                fill="url(#scale)" stroke="#2E7D32" stroke-width="3"/>
+        </svg>
+        <div class="chisel"></div>
+        <div class="tap-hint">Tap to animate</div>
+      </div>
     </div>
   </div>
 
   <script>
-    const container = document.getElementById('container');
-    const chisel = document.querySelector('.chisel');
-    const hands = document.getElementById('hands');
-    let isCarving = false;
-    let rotX = -25, rotY = 30;
-
-    // ROTATE
-    let isRotating = false, startX, startY;
-    document.addEventListener('pointerdown', e => {
-      if (e.target.id === 'start') return;
-      isRotating = true;
-      startX = e.clientX; startY = e.clientY;
+    document.querySelectorAll('.hand-wrapper').forEach(hand => {
+      hand.addEventListener('click', () => {
+        hand.style.transform = 'scale(1.1)';
+        setTimeout(() => hand.style.transform = '', 300);
+      });
     });
-    document.addEventListener('pointermove', e => {
-      if (!isRotating) return;
-      rotY += (e.clientX - startX) * 0.6;
-      rotX -= (e.clientY - startY) * 0.6;
-      container.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-      startX = e.clientX; startY = e.clientY;
-    });
-    document.addEventListener('pointerup', () => isRotating = false);
-
-    // CARVE
-    document.addEventListener('pointerdown', e => {
-      if (e.target.id === 'start') return;
-      isCarving = true;
-      hands.style.opacity = '1';
-      chisel.style.transform = 'translateX(-50%) rotate(80deg) scale(1.3)';
-      createChip(e.clientX, e.clientY);
-    });
-    document.addEventListener('pointerup', () => {
-      isCarving = false;
-      hands.style.opacity = '0.85';
-      chisel.style.transform = 'translateX(-50%) rotate(70deg) scale(1)';
-    });
-
-    function createChip(x, y) {
-      const chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.style.left = x + 'px';
-      chip.style.top = y + 'px';
-      document.body.appendChild(chip);
-      setTimeout(() => chip.remove(), 1400);
-    }
-
-    // INITIAL
-    container.style.transform = `rotateX(-25deg) rotateY(30deg)`;
-    hands.style.opacity = '0.85';
   </script>
 </body>
 </html>
